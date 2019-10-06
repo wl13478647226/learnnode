@@ -30,6 +30,8 @@ server.on('request', function(req, res) {
             // 登录验证
 
             // console.log(req.method);
+            // console.log(req.url);
+            // console.log(urlString.query);
             // console.log(querystring.parse(urlString.query));
 
             if (req.method.toUpperCase() == "POST") {

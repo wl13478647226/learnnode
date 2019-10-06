@@ -1061,3 +1061,431 @@
                 });
             }
                 
+11、异常处理
+    同步异常处理：
+        try {
+            router[pathname](req, res);
+        } catch (err) {
+            console.log(err);
+
+            res.writeHead(200, {
+                'Content-Type': 'text/html;charset=utf-8'
+            });
+
+            res.write(err.toString());
+            res.end();
+        }
+
+    异步异常处理：
+        fs.readFile(path, 'binary', function(err, file) {
+            if (err) {
+                console.log(err);
+                res.end('文件不存在');
+            } else {
+                console.log('输出文件');
+
+                res.write(file, 'binary');
+
+                res.end();
+            }
+        })
+
+    抛出异常：
+        function throwException(flag) {
+            if (flag == 0) {
+                throw '这是一个异常';
+            } else {
+                return flag;
+            }
+        }
+
+        try {
+            var data = throwException(0);
+            res.writeHead(200, {
+                'Content-Type': 'text/html;charset=utf-8'
+            });
+            res.end(data.toString);
+        } catch (err) {
+            console.log(err);
+
+            res.writeHead(200, {
+                'Content-Type': 'text/html;charset=utf-8'
+            });
+
+            res.write(err.toString());
+            res.end();
+        }
+
+12、异步流程控制对象async
+    1.串行无关联：async.series
+    2.并行无关联：async.parallel
+    3.串行有关联：async.waterfall -- 可以传参, 将上一个过程的执行结果传递给下一个过程
+    4.parallelLimit: parallelLimit函数与parallel类似，但是多一个参数limit，限制同时并发数
+
+    setInterval(function(){
+        clearInterval(this);
+    }, 1000);
+
+    const async = require('async');
+
+    function exec() {
+        // 串行无关联, one/two函数按顺序执行
+        async.series({
+                one: function(done) {
+                    done(null, 'one完毕');
+                    //done('null', 'one完毕'); // 当第一个参数不是null时，以下代码将不会执行，直接跳入回调函数中
+                },
+                two: function(done) {
+                    let i = 0;
+                    setInterval(function() {
+                        console.log(123);
+                        i++;
+                        if (i >= 3) {
+                            clearInterval(this);
+                            done(null, 'two完毕'); // 只有done函数被调用时，two函数才会被认为执行结束，才可以继续向下执行
+                        }
+                    }, 1000);
+
+                }
+            },
+            function(err, result) { // 回调函数，参数为错误、执行结果，分别对应done函数的第一个参数、第二个参数
+                console.log(err);
+                console.log(result);
+            }
+        )
+    }
+    exec();
+    console.log('主进程执行完毕！');
+
+    /**
+    * null
+    { one: 'one完毕', two: 'two完毕' }
+    主进程执行完毕！
+    */
+    /**
+    * null
+    { one: 'one完毕' }
+    主进程执行完毕！
+    */
+
+    function exec2() {
+        // 并行无关联
+        async.parallel({
+                one: function(done) {
+                    console.log(345);
+                    let i = 0;
+                    //done(null, 'one完毕');
+                    // done('null', 'one完毕'); 
+                    setInterval(function() {
+                        console.log(456);
+                        i++;
+                        if (i >= 3) {
+                            clearInterval(this);
+                            done('null', 'one完毕'); // 当第一个参数非null时，会阻止two函数的执行
+                        }
+                    }, 1000);
+                },
+                two: function(done) {
+                    let i = 0;
+                    setInterval(function() {
+                        console.log(123);
+                        i++;
+                        if (i >= 3) {
+                            clearInterval(this);
+                            done(null, 'two完毕'); 
+                        }
+                    }, 1000);
+
+                }
+            },
+            function(err, result) { 
+                console.log(err);
+                console.log(result);
+            }
+        )
+    }
+    exec2();
+    /**
+    * 345
+    主进程执行完毕！
+    456
+    123
+    456
+    123
+    456
+    null
+    { one: 'one完毕' }
+    123
+    */
+
+    function exec3() {
+        // 串行有关联
+        async.waterfall(
+            [
+                function one(done) {
+                    console.log(345);
+                    let i = 0;
+                    //done(null, 'one完毕');
+                    // done('null', 'one完毕'); 
+                    setInterval(function() {
+                        console.log(456);
+                        i++;
+                        if (i >= 3) {
+                            clearInterval(this);
+                            done(null, 'one完毕');
+                        }
+                    }, 1000);
+                },
+                function two(prevalue, done) {
+                    let i = 0;
+                    setInterval(function() {
+                        console.log(123);
+                        i++;
+                        if (i >= 3) {
+                            clearInterval(this);
+                            done(null, prevalue + ':two完毕');
+                        }
+                    }, 1000);
+
+                }
+            ],
+            function(err, result) {
+                console.log(err);
+                console.log(result);
+            }
+        )
+    }
+    exec3();
+    /**
+    * 345
+    主进程执行完毕！
+    456
+    456
+    456
+    123
+    123
+    123
+    null
+    one完毕:two完毕
+    */
+
+13、连接MySQL
+    npm install mysql
+
+    var mysql = require('mysql');
+
+    // 创建MySQL连接对象
+    var connection = mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: '',
+        database: 'node',
+        port: '3306'
+    });
+
+    // 尝试连接
+    connection.connect(function(err) {
+        if (err) {
+            console.log(err);
+            return;
+        }
+
+        console.log('connection successed!');
+    });
+
+    // 插入数据
+    let userAddSql = 'insert into user (uname, pwd) values (?,?)';
+    let userAddParam = ['wl', '1234567890'];
+    connection.query(userAddSql, userAddParam, function(err, result) {
+        if (err) {
+            console.log('insert err:' + err.message);
+            return;
+        }
+
+        console.log('insert success!');
+        console.log(result);
+        /**
+        * OkPacket {
+                fieldCount: 0,
+                affectedRows: 1,
+                insertId: 2,
+                serverStatus: 2,
+                warningCount: 0,
+                message: '',
+                protocol41: true,
+                changedRows: 0 
+            }
+        */
+    });
+
+    // 查询数据
+    let userQuerySql = 'select * from user';
+    connection.query(userQuerySql, function(err, result, fields) {
+        if (err) {
+            console.log('query err:' + err.message);
+            return;
+        }
+
+        console.log('first user name:' + result[0].uname);
+    });
+
+    // 删除 -- delete
+    // 修改 -- update
+
+    // 关闭连接
+    connection.end(function(err) {
+        if (err) {
+            console.log(err.toString());
+            return;
+        }
+        console.log('connection closed');
+    });
+
+14、mysql连接池
+    npm install -g node-mysql
+
+    // mysql-pool.js 文件
+    const mysql = require('mysql');
+
+    function OptPool() {
+        this.flag = true; // 是否连接过
+
+        this.pool = mysql.createPool({
+            host: 'localhost',
+            user: 'root',
+            password: '',
+            database: 'node',
+            port: '3306'
+        });
+
+        this.getPool = function() {
+            if (this.flag) {
+                // 监听connection事件
+                this.pool.on('connection', function(connection) {
+                    connection.query('SET SESSION auto_increment_increment=1');
+
+                    this.flag = false;
+                });
+            }
+
+            return this.pool;
+        }
+    }
+
+    module.exports = OptPool;
+
+
+    // 调用连接池
+    var OptPool = require('./mysql-pool');
+
+    var optPool = new OptPool();
+    var pool = optPool.getPool();
+
+    // 从连接池中获取一个连接
+    pool.getConnection(function(err, conn) {
+        if (err) {
+            console.log('connection err:' + err.message);
+            return;
+        }
+
+        // 插入数据
+        let userAddSql = 'insert into user (uname, pwd) values (?,?)';
+        let userAddParam = ['wl', '1234567890'];
+        conn.query(userAddSql, userAddParam, function(err, result) {
+            if (err) {
+                console.log('insert err:' + err.message);
+                return;
+            }
+
+            console.log('insert success!');
+            console.log(result);
+            // conn.release(); // 释放连接进入连接池
+        });
+
+        // 查询数据
+        let userQuerySql = 'select * from user';
+        conn.query(userQuerySql, function(err, result, fields) {
+            if (err) {
+                console.log('query err:' + err.message);
+                return;
+            }
+
+            console.log('first user name:' + result[0].uname);
+        });
+
+        conn.release();
+    });
+
+15、事件机制
+    const EventEmitter = require('events');
+
+    EventEmitter 类
+        emitter.addListener(eventName, listener)
+        emitter.removeListener(eventName, listener)
+        emitter.on(eventName, listener)
+        emitter.off(eventName, listener)
+        emitter.once(eventName, listener)
+        emitter.prependListener(eventName, listener)
+        emitter.prependOnceListener(eventName, listener)
+        emitter.removeAllListeners([eventName])
+        emitter.setMaxListeners(n)
+        emitter.listeners(eventName)
+            返回名为 eventName 的事件的监听器数组的副本。
+        emitter.emit(eventName[, ...args])
+            按照监听器注册的顺序，同步地调用每个注册到名为 eventName 的事件的监听器，并传入提供的参数。
+
+            如果事件有监听器，则返回 true，否则返回 false。
+
+        // 事件类--抛出事件
+        var events = require('events');
+
+        function UserBean() {
+            this.eventEmit = new events.EventEmitter();
+
+            this.zhuce = function(req, res) {
+                console.log('注册');
+                req['uname'] = 'aa';
+                req['pwd'] = 'bb';
+                // 抛出事件消息
+                this.eventEmit.emit('zhuceSuc', 'aa', 'bb');
+            }
+
+            this.login = function(req, res) {
+                console.log('登录');
+                res.write('用户名：' + req['uname']);
+                res.write('密码：' + req['pwd']);
+                res.write('登录');
+            }
+        }
+
+        module.exports = UserBean;
+
+
+        // 事件类--监听事件
+        var http = require('http');
+
+        var UserBean = require('./UserBean');
+
+        http.createServer(function(req, res) {
+            res.writeHead(200, {
+                'Content-Type': 'text/html;charset=utf-8'
+            });
+
+            if (req.url !== '/favicon.ico') {
+                user = new UserBean();
+
+                // 注册监听
+                user.eventEmit.once('zhuceSuc', function(uname, pwd) {
+                    res.write('注册成功');
+                    console.log('user name:' + uname);
+                    console.log('password:' + pwd);
+
+                    user.login(req, res);
+                    res.end();
+                });
+
+                user.zhuce(req, res);
+            }
+        }).listen(8080);
+
+        console.log('Server runnung at http://127.0.0.1:8080');
