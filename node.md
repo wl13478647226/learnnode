@@ -1489,3 +1489,40 @@
         }).listen(8080);
 
         console.log('Server runnung at http://127.0.0.1:8080');
+
+17、浏览器的组成
+    人机交互部分（UI）
+    网络请求部分（Socket）
+    Javascript引擎部分（解析执行javascript） -- chrome V8
+    渲染引擎部分（渲染HTML、CSS等）
+    数据存储部分（cookie、HTML5中的本地存储LocalStorage、SessionStorage）
+
+18、主流渲染引擎
+    渲染引擎 又叫 排版引擎 或 浏览器内核
+
+    主流的 渲染引擎 有：
+        chrome浏览器： Blink引擎（webkit的一个分支）
+        Safari浏览器：webkit引擎
+        Firefox浏览器：Gecko引擎
+        opera浏览器：Blink引擎
+        Internet Explorer 浏览器：Trident引擎
+        Microsoft Edge浏览器：EdgeHTML引擎（Trident的一个分支）
+
+19、浏览器工作原理
+    解析HTML构建DOM树
+    解析CSS规则构建CSS树
+
+    DOM树 + CSS树  =  Render tree -> Layout of the render tree -> painting the render tree
+
+    Render tree 中不包含不需要显示的元素（header、display：none 的元素 等）
+
+    layout/reflow
+
+20、请求报文、响应报文
+    请求行  （方法、HTTP协议/版本号）                        响应行  （HTTP协议、状态码、解释信息）
+    请求头                                                  响应头
+    empty line                                              empty line
+    请求体                                                  响应体
+
+21、C/S (Client/Server)     客户端服务器
+    B/S (Browser/Server)    浏览器服务器
