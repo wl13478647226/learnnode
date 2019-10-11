@@ -1526,3 +1526,38 @@
 
 21、C/S (Client/Server)     客户端服务器
     B/S (Browser/Server)    浏览器服务器
+
+22、node.js 是什么
+    node.js是一个开发平台
+    开发平台：有对应的编程语言、有语言运行时、又能实现特定功能的API（SDK：Software Development Kit）
+    node.js 平台是基于Chrome V8 Javascript 引擎构建 -- 语言运行时
+    基于node.js 可以开发控制台程序（命令行程序、CLI程序）、桌面应用程序（GUI）（借助node-webkit、electron等框架实现）、Web应用程序（网站）
+
+    node.js 全栈开发技术栈： MEAN  -- MongoDB Express Angular Node.js 
+
+23、node.js 特点
+    事件驱动（事件触发，执行回调函数）
+    非阻塞 I/O 模型（当执行 I/O 操作时， 不会阻塞线程）
+    单线程
+    开源库生态系统 -- npm
+
+24、node.js 开发Web应用程序 和 PHP、Java等传统模式开发Web应用程序的区别
+    传统模式：有Web容器 -- Apache（解析HTTP报文、监听端口）
+            Apache可以处理静态资源
+            php/java处理动态资源
+
+    Node.js: 没有Web容器，node本身带有HTTP服务器（可以解析HTTP报文、可以监听端口）
+            node处理静态资源、动态资源
+
+25、REPL介绍
+    REPL： Read-Eval-Print-Loop（交互式解释器）
+    R 读取 -- 读取用户输入，解释输入了javascript数据结构并存储在内存中
+    E 执行 -- 执行输入的数据结构
+    P 打印 -- 输出结构
+    L 循环 -- 循环操作以上步骤直到用户两次按下 Ctrl-c 退出
+
+    字符串 includes 方法
+        'asdsdf'.includes('d');  // true
+
+    退出node执行环境
+        To exit, press ^C again or type .exit
