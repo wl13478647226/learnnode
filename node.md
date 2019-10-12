@@ -1561,3 +1561,55 @@
 
     退出node执行环境
         To exit, press ^C again or type .exit
+
+26、javascript文件命名规则
+    不要用中文
+    不要包含空格
+    不要出现node关键字
+    建议以‘-’分割单词
+
+27、文件读写
+    node模块：
+        process 模块使用时无需通过require()函数来加载模块， 可以直接使用 -- process 是全局模块
+        fs 模块， 在使用时必须通过require()函数加载模块， 方可使用  
+
+        Global 下的即是全局模块， 不需要require()加载
+
+    文件写入
+        var msg = "Hello World, !!!";
+        fs.writeFile('./hello.text', msg, function(err) {
+            // err === null -> 写文件成功
+            if (err) {
+                console.log("err name:" + err.name + ", err message:" + "err.message");
+            } else {
+                console.log("写入成功！！")
+            }
+        })
+
+    文件读取
+        在读取文件时，传递编码参数，回调函数中获取到的data就为相应编码的数据
+        fs.readFile('./hello.text', function(err, data) {
+            if (err) {
+                console.log("err name:" + err.name + ", err message:" + "err.message");
+            } else {
+                console.log(data); // data 为Buffer类型（字节数组）
+                // <Buffer 48 65 6c 6c 6f 20 57 6f 72 6c 64 2c 20 21 21 21>
+
+                console.log(data.toString('utf8')); // 默认编码也是utf8
+                // Hello World, !!!
+            }
+        })
+
+28、node单线程异步，IO非阻塞
+    Call Stack  执行当前程序
+    Web Apis / Node Apis   执行异步，非阻塞IO
+    Callback Queue  将异步加入队列，等待Call Stack为空时加入栈 -- 单线程
+
+29、__dirname 、__filename
+    文件的相对路径（./）是参照node执行命令所在的路径，而不是参照代码所在文件的路径
+
+    解决：
+        __dirname ：当前正在执行的js文件所在的目录
+        __filename ： 当前正在执行的js文件的完整路径
+
+        两者不是全局变量，在不同文件（模块）中是不同的
