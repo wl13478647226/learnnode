@@ -1600,6 +1600,18 @@
             }
         })
 
+    创建目录
+    var path = require('path');
+    var dirpath = path.join(__dirname, 'test');
+
+    fs.mkdir(dirpath, function(err) {
+        if (err) {
+            console.log("err name:" + err.name + ", err message:" + "err.message");
+        } else {
+            console.log('创建目录成功');
+        }
+    })
+
 28、node单线程异步，IO非阻塞
     Call Stack  执行当前程序
     Web Apis / Node Apis   执行异步，非阻塞IO
@@ -1613,3 +1625,192 @@
         __filename ： 当前正在执行的js文件的完整路径
 
         两者不是全局变量，在不同文件（模块）中是不同的
+
+30、path
+    用于跨平台的路径拼接
+    var path = require('path');
+    var filename = path.join(__dirname, 'hello.txt');
+
+31、http server
+    const http = require('http');
+
+    // 创建HTTP服务对象
+    var server = http.createServer();
+
+    // 监听用户请求事件（request事件）
+    server.on('request', function(request, response) {
+        response.setHeader('Content-Type', 'text/plain; charset=utf-8');
+        response.write('hello');
+
+        response.end();
+    });
+
+    // 启动服务，监听端口
+    server.listen(8080, function() {
+        console.log('服务已启动，请访问：http://localhost:8080');
+    })
+
+
+    const url = require('url');
+
+    // 创建HTTP服务对象
+    http.createServer(function(request, response) {
+
+        // 获取请求URL  request.url
+        console.log(request.url);
+        console.log(url.parse(request.url));
+
+        response.end();
+    }).listen(8080, function() {
+        console.log('服务已启动，请访问：http://localhost:8080');
+    });
+
+    
+    // 根据不同请求返回不同文件
+    const http = require('http');
+    const url = require('url');
+    const fs = require('fs');
+    const path = require('path');
+    http.createServer(function(request, response) {
+
+        // 获取请求URL  request.url
+        // console.log(request.url);
+        // console.log(url.parse(request.url));
+        var requestUrl = url.parse(request.url);
+        response.setHeader('Content-Type', 'text/html; charset=utf-8');
+
+        if (requestUrl.pathname === '/login') {
+            var filename = path.join(__dirname, 'login.html');
+            fs.readFile(filename, function(err, data) {
+                if (err) {
+                    console.log('err name:' + err.name);
+                } else {
+                    response.write(data); // 此时data是Buffer（二进制字节数组）
+                    response.end();
+                }
+            });
+        }
+
+    }).listen(8080, function() {
+        console.log('服务已启动，请访问：http://localhost:8080');
+    });
+
+    http 请求静态资源（图片/CSS）
+        http.createServer(function(request, response) {
+
+            var requestUrl = url.parse(request.url);
+
+            function readFileCallback(err, data) {
+                if (err) {
+                    console.log('err name:' + err.name);
+                    response.end();
+                } else {
+                    response.write(data); // 此时data是Buffer（二进制字节数组）
+                    response.end();
+                }
+            }
+
+            if (requestUrl.pathname === '/login') {
+                var filename = path.join(__dirname, 'login.html');
+                response.setHeader('Content-Type', 'text/html; charset=utf-8');
+
+                fs.readFile(filename, readFileCallback);
+            } else if (requestUrl.pathname === '/03.jpg') {
+                var filename = path.join(__dirname, '03.jpg');
+                response.setHeader('Content-Type', 'image/jpeg; charset=utf-8');
+
+                fs.readFile(filename, readFileCallback);
+            } else if (requestUrl.pathname === '/login.css') {
+                var filename = path.join(__dirname, 'login.css');
+                response.setHeader('Content-Type', 'text/css; charset=utf-8');
+
+                fs.readFile(filename, readFileCallback);
+            }
+
+        }).listen(8080, function() {
+            console.log('服务已启动，请访问：http://localhost:8080');
+        });
+
+32、try-catch 不能捕获异步异常
+    异步操作，可以通过错误号（err.code）进行异步处理
+    err:
+        const fs = require('fs');
+        const path = require('path');
+
+        var filename = path.join(__dirname, 'abc/abc.txt');
+
+        fs.writeFile(filename, '大家好', 'utf8', function(err) {
+            if (err) {
+                console.log(err.name); // Error
+                console.log(err.message); // ENOENT: no such file or directory, open 'c:\wamp64\www\learnnode\aliyun\exception\abc\abc.txt'
+                console.log(err.code); // ENOENT
+                throw err;
+            }
+            console.log('ok');
+        })
+
+    try-catch 不能捕获异步异常
+        try {
+            fs.writeFile(filename, '大家好666', 'utf8', function(err) {
+                console.log('ok');
+            });
+        } catch (e) {
+            console.log('出错了');
+        }
+
+33、模拟Apache服务器--返回静态资源
+
+    const http = require('http');
+    const url = require('url');
+    const fs = require('fs');
+    const path = require('path');
+    const mime = require('mime');
+
+    http.createServer(function(request, response) {
+        // 获取请求路径
+        var requestUrl = url.parse(request.url).pathname;
+
+        // 设置静态资源路径
+        var staticPath = path.join(__dirname, 'public');
+
+        // 拼接请求静态资源文件路径
+        var staticFileName = path.join(staticPath, requestUrl);
+
+        function readFileCallback(err, data) {
+            if (err) {
+                response.end('文件不存在 404');
+            } else {
+                response.write(data); // 此时data是Buffer（二进制字节数组）
+                response.end();
+            }
+        }
+
+        // 根据文件后缀设置Content-Type
+        // var isStatic = requestUrl.lastIndexOf(".")
+        // if (isStatic < 0) {
+        //     response.setHeader('Content-Type', 'text/html; charset=utf-8');
+        // } else {
+        //     var suffix = requestUrl.substring(isStatic + 1);
+        //     if (suffix === 'css') {
+        //         response.setHeader('Content-Type', 'text/css; charset=utf-8');
+        //     } else if (suffix === 'js') {
+        //         response.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        //     } else if (suffix === 'jpg' || suffix === 'jpeg') {
+        //         response.setHeader('Content-Type', 'image/jpeg; charset=utf-8');
+        //     } else if (suffix === 'png') {
+        //         response.setHeader('Content-Type', 'image/png; charset=utf-8');
+        //     } else if (suffix === 'gif') {
+        //         response.setHeader('Content-Type', 'image/gif; charset=utf-8');
+        //     }
+        // }
+
+        // 根据插件mime设置Content-Type
+        response.setHeader('Content-Type', mime.getType(staticFileName));
+
+        fs.readFile(staticFileName, readFileCallback);
+
+    }).listen(8080, function() {
+        console.log('服务已启动，请访问：http://localhost:8080');
+    });
+
+34、对于服务器来说请求URL就是一个标识符，服务器中不一定会有相应的文件

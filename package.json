@@ -18,7 +18,9 @@
         "webpack-cli": "^3.3.9",
         "webpack-dev-server": "^3.8.2"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "mime": "^2.4.4"
+    },
     "scripts": {
         "dev": "webpack --config webpack.config.js",
         "build": "webpack --mode production",
