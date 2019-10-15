@@ -1814,3 +1814,94 @@
     });
 
 34、对于服务器来说请求URL就是一个标识符，服务器中不一定会有相应的文件
+    
+    HTML页面中：
+        './' -- 相对路径： 相对于当前URL的路径（不包括最后的文件名）做相对定位
+        '/' -- 绝对路径：相对于域名做相对定位
+
+35、request对象 和 response对象
+
+    request：解析HTTP请求报文 -- http.IncomingMessage 类
+    response：返回响应报文 -- http.ServerResponse 类
+
+    request对象常用成员：
+        request.headers -- 请求报文头
+        request.rawHeaders  -- 原生的请求报文头
+        request.httpVersion
+        request.method
+        request.url
+
+        // console.log(request.headers);  // 返回请求报文头对象
+        // { 
+        //     host: 'localhost:8080',
+        //     connection: 'keep-alive',
+        //     'upgrade-insecure-requests': '1',
+        //     'user-agent':
+        //     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36',
+        //     'sec-fetch-mode': 'navigate',
+        //     accept:
+        //     'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+        //     'sec-fetch-site': 'none',
+        //     'accept-encoding': 'gzip, deflate, br',
+        //     'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8'
+        // }
+
+        // console.log(request.rawHeaders);     // 返回请求报文头数组，奇数行是键，偶数行是值
+        // [ 
+        //     'Host',
+        //     'localhost:8080',
+        //     'Connection',
+        //     'keep-alive',
+        //     'Cache-Control',
+        //     'max-age=0',
+        //     'Upgrade-Insecure-Requests',
+        //     '1',
+        //     'User-Agent',
+        //     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36',
+        //     'Sec-Fetch-Mode',
+        //     'navigate',
+        //     'Sec-Fetch-User',
+        //     '?1',
+        //     'Accept',
+        //     'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+        //     'Sec-Fetch-Site',
+        //     'none',
+        //     'Accept-Encoding',
+        //     'gzip, deflate, br',
+        //     'Accept-Language',
+        //     'zh-CN,zh;q=0.9,en;q=0.8' 
+        // ]
+
+        // console.log(request.httpVersion); // 获取请求客户端的HTTP版本号
+        // 1.1
+
+        // console.log(request.method); // 请求方法
+        // GET
+
+        // console.log(request.url); // 请求路径，不包含域名、端口、协议
+        // /
+
+    response对象的常用成员：
+
+        response.write(data)  -- 返回数据 data 可以是字符串或Buffer
+        response.end([data])   -- 响应头和响应主体已发送  data 可以是字符串或Buffer
+        response.setHeader('','')   -- 设置响应报文头，在end() 和 write() 之前使用, 否则将报错
+        response.statusCode     -- 设置响应状态码   放在setHeader() 前后
+        response.statusMessage  -- 设置响应状态信息 放在setHeader() 前后
+        response.writeHead()   -- 写入响应头
+            response.writeHead(404, 'not found', {      // 状态码，消息，响应头
+                'Content-type': 'text/html; charset=utf-8'
+            })
+
+            response.statusCode = 200;
+            response.statusMessage = 'success';
+
+            response.setHeader('content-type', 'text/html; charset=utf-8');
+
+            response.writeHead(404, 'not found', {
+                'Content-type': 'text/html; charset=utf-8'
+            });
+
+            writeHead() 放在setHeader/statusMessage/statusCode之后使用，否则会报错
+                        同时优先执行writeHead内的信息
+                        当没有writeHead方法时，系统会默认调用此方法，并将设置信息放在该方法中写入
