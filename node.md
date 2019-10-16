@@ -1905,3 +1905,42 @@
             writeHead() 放在setHeader/statusMessage/statusCode之后使用，否则会报错
                         同时优先执行writeHead内的信息
                         当没有writeHead方法时，系统会默认调用此方法，并将设置信息放在该方法中写入
+
+36、NPM（node packge manager）
+    nvm list
+    nvm use 
+    node -v
+    npm -v
+    npm install npm@latest -g
+    npm install 包名  --本地安装    项目中使用的包一定要执行一次本地安装
+    npm install 包名 -g   --全局安装  （意味着该包可以以命令行工具的形式使用）
+    npm version
+    npm init    初始化package.json文件
+    npm init -y     一步生成package.json文件
+
+37、模块（Modules）和包（Packages）的区别
+
+    模块可以是任何一个文件或目录，只要能被node.js通过require()加载即可
+
+    包是一个文件或目录必须有一个package.json文件来描述，就可以是一个包
+
+38、package.json/package-lock.json 文件
+    package.json：包描述文件或项目描述文件
+        元数据：
+            name       必须有
+            version     必须有
+            description
+            author
+            main
+            dependencies
+
+        项目目录使用小写字母，不要使用大写字母和中文
+    
+    package-lock.json：快速下载安装
+        元数据：
+            包名
+            仓库地址
+            hash校验码
+
+39、项目：新闻列表
+    
