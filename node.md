@@ -1943,4 +1943,8 @@
             hash校验码
 
 39、项目：新闻列表
+
+40、node.js模块
+    require加载模块是同步的
     
+    模块：内置模块（fs/http/url/path）、文件模块（.js/.json/.node--c/c++编写的模块）、自定义模块（第三方模块）

@@ -10,7 +10,16 @@
 </head>
 
 <body>
-
+    <% for(let i=0; i<list.length; i++){ %>
+        <h2>
+            <a href="/item?id=<%= list[i].id %>">
+                <%= list[i].title %>
+            </a>
+        </h2>
+        <p>
+            <%= list[i].text %>
+        </p>
+        <% } %>
 </body>
 
 </html>
