@@ -1948,3 +1948,60 @@
     require加载模块是同步的
     
     模块：内置模块（fs/http/url/path）、文件模块（.js/.json/.node--c/c++编写的模块）、自定义模块（第三方模块）
+        文件模块加载顺序：
+            .js
+            .json
+            .node
+            文件夹  -->  package.json  -->  main（入口文件  app.js -> index.js/index.json/index.node）  -->  加载失败
+
+        自定义模块（第三方模块）加载顺序：
+            在当前js所在目录查找node_modules, 如果有此文件夹，就在此文件夹下查找模块
+            如果没有node_modules就向上级目录继续查找node_modules，直到根目录为止
+
+        模块首次加载后被存入缓存中，以后使用在缓存中查找
+
+        核心内置模块是二进制文件，加载速度较快
+
+        核心模块保存在lib目录下
+
+        自定义模块不要与核心模块重名，模块加载时首先加载核心模块，这样自定义模块就不可能被加载到，此时只能通过路径加载
+
+        require()中使用的 ./ 相对路径，指相对require()所在的当前文件， 而不是项目的启动文件
+
+        建议加载文件模块使用后缀名
+
+        被加载模块会先被执行一遍，并且不会重复加载
+
+41、node.js 遵循了common.js规范
+
+42、Buffer
+    javascript没有读写二进制数据流的机制
+    node.js引入Buffer用于操作TCP流和文件流
+    Buffer创建后大小不允许修改
+    Buffer是全局的
+
+    字节数组转Buffer对象
+        Buffer.from(array)
+
+    Buffer转字符串
+        buf.toString('utf8');
+        buf.toString('base64');
+
+    字符串转Buffer对象
+        Buffer.from(string, 'utf8')
+
+    拼接Buffer数组
+        Buffer.concat(bufferArray);
+
+    获取字符串字节数
+        Buffer.byteLength(string, 'utf8');
+
+    判断是否是Buffer对象
+        Buffer.isBuffer(obj);
+
+    获取buffer数组中的指定字节
+        buffer[index]
+
+    获取buffer数组长度
+        buffer.length
+
