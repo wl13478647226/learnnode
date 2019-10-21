@@ -2005,3 +2005,44 @@
     获取buffer数组长度
         buffer.length
 
+43、Express
+    路由
+    中间件
+    request和response对象扩展
+    可以集成模板引擎
+
+    response对象
+        res.send('Hello World');        
+            参数可以是Buffer对象、object对象、字符串、数组
+            自动生成响应报文头：Content-Type/Content-Length...
+
+        res.end('Hello World');         
+            参数可以是字符串和Buffer对象
+
+    注册路由
+        请求路径的pathname 必须严格等于（===） /index
+        app.get('/index', function(req, res) {
+            res.send('Hello World');
+        });
+
+        app.get('/', function(req, res) {
+            res.send('Index');
+        });
+
+        app.post('/', function(req, res) {
+            res.send('Post');
+        });
+
+        put/delete/...
+
+
+        请求路径的pathname以/index开头（/index为路径的第一段），并且接受任何方法（post/get/put/delete...）
+        app.use('/index', function(req, res) {
+            res.send('use');
+        });
+
+
+        请求路径pathname必须严格等于（===） /index, 但请求方法不限
+        app.all('/index', function(req, res) {
+            res.send('all');
+        });

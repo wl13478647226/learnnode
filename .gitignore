@@ -5,6 +5,7 @@ bin-release/
 [Bb]in/
 /node_modules
 /aliyun/project/node_modules
+/aliyun/express-demo/node_modules
 
 # Other files and folders
 .settings/
