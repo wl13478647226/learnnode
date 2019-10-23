@@ -2019,6 +2019,41 @@
         res.end('Hello World');         
             参数可以是字符串和Buffer对象
 
+        res.json({user: 'tob'});
+            返回json数据，参数不可以是null或undefined
+            app.get('/json', function(req, res, next) {
+                // res.json({ name: 'json', age: '12' });
+                // {
+                //     "name": "json",
+                //     "age": "12"
+                // }
+
+                res.json(['json', '12']);
+                // [
+                //     "json",
+                //     "12"
+                // ]
+            });
+
+        res.redirect([status,] path);
+            重定向
+            app.get('/redirect', function(req, res, next) {
+                res.redirect('https://www.baidu.com');
+            });
+
+        res.sendFile(path, [option,] callback);
+            发送文件
+            res.sendFile(fileName, options, function (err) {
+                if (err) {
+                    next(err);
+                } else {
+                    console.log('Sent:', fileName);
+                }
+            });
+
+        res.status(code).end();
+            res.status(404).end('文件不存在');
+
     注册路由
         请求路径的pathname 必须严格等于（===） /index
         app.get('/index', function(req, res) {
@@ -2046,3 +2081,87 @@
         app.all('/index', function(req, res) {
             res.send('all');
         });
+
+        正则匹配路由：
+        app.get(/^\/index(\/.+)*$/, function(req, res) {
+            res.send('正则匹配路由');
+        });
+
+        req.params 获取路由参数
+        app.get('/news/:years/:month/:day', function(req, res) {
+            res.send(req.params);
+            // {
+            //     "years": "2019",
+            //     "month": "10",
+            //     "day": "23"
+            // }
+        });
+
+    处理静态资源：
+        app.use('/public', express.static(path.join(__dirname, 'public')));
+        请求路径以'/public'开头，将在public文件夹下寻找静态资源
+        express.static()返回值为一个函数
+
+
+    express.Router() 创建路由对象，挂载路由
+        // 创建router对象（router 对象既是一个对象，也是一个函数）
+        const express = require('express');
+        let router = express.Router();
+
+        // 通过router对象挂载路由
+        router.get('/index', function(req, res) {
+            res.send('Hello World');
+        });
+
+        router.get('/', function(req, res) {
+            res.send('Index');
+        });
+
+        router.post('/', function(req, res) {
+            res.send('Post');
+        });
+
+        // 返回router对象
+
+        module.exports = router;
+
+        app文件注册路由
+        app.use(router);
+        等价于
+        app.use('/', router);
+
+    通过router对象挂载路由
+        let handler = require('./handler.js');
+
+        router.get('/index', handler.index);
+
+        router.get('/', handler.getData);
+
+        router.post('/', handler.postData);
+
+        // 设置静态资源路由
+        router.use('/public', express.static(path.join(__dirname, 'public')));
+
+
+        业务模块
+        module.exports = {
+            index: function(req, res) {
+                // 处理index请求
+                res.send('index');
+            },
+            getData: function(req, res) {
+                // 处理get请求
+                // sendFile() 不可以处理模板数据
+                // res.sendFile(path.join(__dirname, 'views', 'submit.html'), function(err) {
+                //     if (err) {
+                //         throw err;
+                //     }
+                // })
+
+                // render() 处理模板-- 默认不可以使用，需要模板引擎
+                res.render(path.join(__dirname, 'views', 'submit.html'));
+            },
+            postData: function(req, res) {
+                // 处理post请求
+            }
+        }
