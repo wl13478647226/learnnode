@@ -4,7 +4,7 @@
     "description": "learn node",
     "main": "index.js",
     "dependencies": {
-        "async": "^3.1.0",
+        "async": "^3.2.2",
         "autoprefixer": "^9.6.2",
         "css-loader": "^3.2.0",
         "file-loader": "^4.2.0",
